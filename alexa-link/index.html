@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>do-it · Connect Alexa</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background-color: #0b1020;
+      color: #e8ecf5;
+      padding: 16px;
+    }
+    .card {
+      width: min(92vw, 440px);
+      padding: 32px 28px;
+      background-color: #131a2e;
+      border: 1px solid #243049;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      color: #e8ecf5;
+    }
+    .logo span {
+      color: #4c7dff;
+    }
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 12px;
+      color: #e8ecf5;
+    }
+    p {
+      color: #aeb8cc;
+      margin: 0 0 20px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 12px 20px;
+      background-color: #4c7dff;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 0;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+    .btn:hover {
+      background-color: #3b6be8;
+    }
+    .helper {
+      font-size: 0.85rem;
+      color: #8a96ad;
+      margin-top: 16px;
+      margin-bottom: 0;
+    }
+    .error-card {
+      border-color: #5c2434;
+    }
+    .error-title {
+      color: #ff6b81;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="card" id="card">
+    <div class="logo">do<span>-</span>it</div>
+    <div id="content">
+      <h1 id="title">Connecting to do-it...</h1>
+      <p id="description">Finalizing your Alexa account connection.</p>
+      <a id="action-btn" class="btn hidden" href="#">Open do-it</a>
+      <p id="helper-text" class="helper hidden">If do-it didn't open automatically, click the button above.</p>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var error = params.get('error');
+      var code = params.get('code');
+      var state = params.get('state');
+
+      var titleEl = document.getElementById('title');
+      var descEl = document.getElementById('description');
+      var btnEl = document.getElementById('action-btn');
+      var helperEl = document.getElementById('helper-text');
+      var cardEl = document.getElementById('card');
+
+      if (error) {
+        if (cardEl) cardEl.classList.add('error-card');
+        if (titleEl) {
+          titleEl.textContent = 'Account Linking Failed';
+          titleEl.classList.add('error-title');
+        }
+        if (descEl) {
+          var desc = 'Linking was cancelled or failed in Amazon';
+          var detail = params.get('error_description');
+          if (detail) {
+            desc += ': ' + detail;
+          } else {
+            desc += '.';
+          }
+          descEl.textContent = desc;
+        }
+        if (btnEl) {
+          var errorQuery = window.location.search.substring(1);
+          var returnUrl = errorQuery ? 'doit://alexa-link?' + errorQuery : 'doit://alexa-link';
+          btnEl.setAttribute('href', returnUrl);
+          btnEl.textContent = 'Return to do-it';
+          btnEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (code && state) {
+        var query = window.location.search.substring(1);
+        var targetUrl = 'doit://alexa-link?' + query;
+
+        if (titleEl) titleEl.textContent = 'Connecting to do-it...';
+        if (descEl) descEl.textContent = 'Please wait while we return you to the application.';
+        if (btnEl) {
+          btnEl.setAttribute('href', targetUrl);
+          btnEl.textContent = 'Open do-it';
+          btnEl.classList.remove('hidden');
+        }
+        if (helperEl) {
+          helperEl.textContent = "If do-it didn't open automatically, click the button above.";
+          helperEl.classList.remove('hidden');
+        }
+
+        try {
+          window.location.href = targetUrl;
+        } catch (e) {
+          // Fallback if direct assignment is restricted
+        }
+        return;
+      }
+
+      if (titleEl) titleEl.textContent = 'Invalid Request';
+      if (descEl) descEl.textContent = 'No authorization code or error was found. Please initiate Alexa linking from the do-it app settings.';
+    })();
+  </script>
+</body>
+</html>

@@ -14,7 +14,7 @@
 <body>
 <p class="lang"><a href="index.html">English</a></p>
 <h1>Política de Privacidade</h1>
-<p class="updated">Última atualização: 25 de outubro de 2026</p>
+<p class="updated">Última atualização: 31 de outubro de 2026</p>
 
 <p>Esta Política de Privacidade descreve como o "Do It" (o "App", a "Empresa", "nós") coleta, usa e protege suas informações quando você usa o aplicativo de lista de tarefas Do It no Android, Windows, iOS, macOS, Linux e web (o "Serviço"), e explica seus direitos de privacidade. Ao usar o Serviço, você concorda com esta política.</p>
 
@@ -37,6 +37,15 @@
 
 <h3>Entrada por voz</h3>
 <p>Se você usar a entrada por voz, o App acessa o microfone somente enquanto você dita. A fala é processada pelo serviço de reconhecimento de voz do seu dispositivo. Se você usar recursos de IA, o texto do seu pedido pode ser enviado ao Google Gemini para interpretá-lo.</p>
+
+<h3>Google Agenda (opcional)</h3>
+<p>Você pode conectar o Google Agenda em Perfil &gt; Integrações. Cada dispositivo pede acesso separadamente, e cada uma das duas opções pede acesso só quando você a ativa:</p>
+<ul>
+<li><strong>Mostrar eventos da agenda</strong> (escopos <code>calendar.calendarlist.readonly</code> e <code>calendar.events.readonly</code>): o App lista suas agendas para você escolher quais exibir. Depois lê os eventos delas, de 7 dias atrás até cerca de 3 meses à frente, e os mostra somente para leitura ao lado das suas tarefas. O App nunca cria, altera ou exclui esses eventos.</li>
+<li><strong>Adicionar tarefas a uma agenda do-it</strong> (escopo <code>calendar.app.created</code>): o App cria uma agenda chamada "do-it" na sua conta Google. Ele grava nela, como eventos, as tarefas que têm data, e os atualiza ou remove quando as tarefas mudam. Ele não tem acesso às suas outras agendas nem aos seus outros eventos.</li>
+</ul>
+<p>Os eventos são lidos diretamente do Google pelo seu dispositivo. Eles ficam guardados apenas em um cache local nesse dispositivo, só com título, horário, nome e cor da agenda, local e link do evento; participantes e descrições não são guardados. Os eventos nunca são enviados aos nossos servidores, nunca são sincronizados com seus outros dispositivos e nunca entram em backups. Também nunca são compartilhados com terceiros, nunca são usados para publicidade e nunca são usados para treinar modelos de IA. Os tokens de acesso do Google também ficam no seu dispositivo: no login Google no Android, iOS e macOS, e no armazenamento seguro do sistema no Windows e Linux. Desconectar a integração ou sair da conta apaga desse dispositivo os eventos em cache e os tokens guardados. A agenda "do-it" continua na sua conta Google até você excluí-la. Você pode revogar o acesso do App a qualquer momento em <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</p>
+<p>O uso e a transferência para qualquer outro app, pelo Do It, de informações recebidas das APIs do Google seguem a <a href="https://developers.google.com/terms/api-services-user-data-policy">Política de Dados do Usuário dos Serviços de API do Google</a>, incluindo os requisitos de Uso Limitado.</p>
 
 <h3>Dados de uso e do dispositivo</h3>
 <p>Usamos o Firebase Analytics (Google) para coletar eventos de uso do app e identificadores do dispositivo, como ID da instância do app, modelo do aparelho, sistema operacional e versão do app, para entender o uso dos recursos e melhorar o Serviço. Logs de servidor (como endereço IP e horário de acesso) são usados para segurança e solução de problemas.</p>

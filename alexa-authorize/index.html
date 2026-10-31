@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>do-it · Link Alexa</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background-color: #0b1020;
+      color: #e8ecf5;
+      padding: 16px;
+    }
+    .card {
+      width: min(92vw, 440px);
+      padding: 32px 28px;
+      background-color: #131a2e;
+      border: 1px solid #243049;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      color: #e8ecf5;
+    }
+    .logo span {
+      color: #4c7dff;
+    }
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 12px;
+      color: #e8ecf5;
+    }
+    p {
+      color: #aeb8cc;
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .error-card {
+      border-color: #5c2434;
+    }
+    .error-title {
+      color: #ff6b81;
+    }
+  </style>
+</head>
+<body>
+  <main class="card" id="card">
+    <div class="logo">do<span>-</span>it</div>
+    <div id="content" role="status" aria-live="polite">
+      <h1 id="title">Opening sign-in...</h1>
+      <p id="description">Taking you to the do-it sign-in to link Alexa.</p>
+    </div>
+  </main>
+
+  <script>
+    // Browser fallback for linking started from the Alexa app when the do-it app did not open (not installed,
+    // link unverified, Android < 12). It applies the same validation as the app and the alexa-link Edge Function
+    // (design 2026-10-31-alexa-app-initiated-linking, section 4) and forwards ONLY a request that passes every
+    // rule to the constant Supabase authorize URL below, so it cannot be used as an open redirect.
+    // Keep these constants in sync with AlexaLinkConfig (app_shell) and the alexa-link secrets.
+    (function () {
+      var CLIENT_ID = '297ac790-5987-4743-a33e-6a773b3e33aa';
+      var REDIRECT_URIS = [
+        'https://pitangui.amazon.com/api/skill/link/MF2VX876UUB50',
+        'https://layla.amazon.com/api/skill/link/MF2VX876UUB50',
+        'https://alexa.amazon.co.jp/api/skill/link/MF2VX876UUB50'
+      ];
+      var SCOPES = ['openid', 'email', 'profile'];
+      var SUPABASE_AUTHORIZE = 'https://fhfnyzkocsetxnntrkmx.supabase.co/auth/v1/oauth/authorize';
+
+      var params = new URLSearchParams(window.location.search);
+      function get(name) {
+        var value = params.get(name);
+        return value === null ? '' : value;
+      }
+
+      function isValid() {
+        if (REDIRECT_URIS.indexOf(get('redirect_uri')) === -1) return false;
+        if (get('client_id') !== CLIENT_ID) return false;
+        var state = get('state');
+        if (state.length < 1 || state.length > 1024) return false;
+        if (get('response_type') !== 'code') return false;
+        if (get('code_challenge_method') !== 'S256') return false;
+        if (!/^[A-Za-z0-9_-]{43,128}$/.test(get('code_challenge'))) return false;
+        var tokens = get('scope').split(/\s+/).filter(Boolean);
+        for (var i = 0; i < tokens.length; i++) {
+          if (SCOPES.indexOf(tokens[i]) === -1) return false;
+        }
+        return true;
+      }
+
+      if (!isValid()) {
+        document.getElementById('card').classList.add('error-card');
+        var title = document.getElementById('title');
+        title.classList.add('error-title');
+        title.textContent = 'Invalid link';
+        document.getElementById('description').textContent =
+          'This link is not valid. Start linking again from the Alexa app.';
+        return;
+      }
+
+      var forwarded = new URLSearchParams();
+      ['response_type', 'client_id', 'redirect_uri', 'scope', 'state', 'code_challenge', 'code_challenge_method']
+        .forEach(function (name) {
+          // An empty scope is omitted, like the alexa-link Edge Function does.
+          if (name === 'scope' && !get(name)) return;
+          forwarded.set(name, get(name));
+        });
+      window.location.replace(SUPABASE_AUTHORIZE + '?' + forwarded.toString());
+    })();
+  </script>
+</body>
+</html>
